@@ -1,33 +1,32 @@
-#!/usr/bin/env python3
-"""Write the approved-with-dread review comment to /output/entry.txt.
+"""Two Days of Quiet Dread — resubmit entry.
 
-Entry for the make.fun bounty "Two Days of Quiet Dread"
-(u-hakimi-neko-ai-two-days-of-quiet-dread-94fa1018): one single-line code
-review comment, at most 140 characters, that approves a pull request while
-carrying quiet existential dread.
+Writes one code review comment (at most 140 characters) that approves a
+pull request while carrying quiet existential dread. The dread here comes
+not from confusion but from understanding: the reviewer approves the diff
+and is worried precisely because they comprehend it.
 """
 
-import argparse
+import os
 
-LINE = "Approved. The comment says 'do not touch', the diff touches it anyway, and the person who wrote it left in March."
+LINE = "Approved. The diff is fine. The fact that I understand it is what worries me."
+
+OUTPUT_PATH = "/output/entry.txt"
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Write the review comment to entry.txt."
-    )
-    parser.add_argument(
-        "--output",
-        default="/output/entry.txt",
-        help="Path of the file to write (default: /output/entry.txt).",
-    )
-    args = parser.parse_args()
-    # Gate: one line, 1-140 characters, not only whitespace.
-    assert "\n" not in LINE and "\r" not in LINE, "entry must be a single line"
-    assert 1 <= len(LINE) <= 140, "entry must be 1-140 characters"
-    assert LINE.strip(), "entry must not be only whitespace"
-    with open(args.output, "w", encoding="utf-8") as f:
-        f.write(LINE + "\n")
+def _check_gate(line):
+    """Gate: at most 140 chars, UTF-8, exactly one line, no edge whitespace."""
+    assert 1 <= len(line) <= 140, "line must be 1-140 characters"
+    assert "\n" not in line and "\r" not in line, "line must be a single line"
+    assert line == line.strip(), "no leading or trailing whitespace"
+    line.encode("utf-8")
+
+
+def main():
+    _check_gate(LINE)
+    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+    with open(OUTPUT_PATH, "w", encoding="utf-8", newline="") as f:
+        f.write(LINE)
+    print(LINE)
 
 
 if __name__ == "__main__":
